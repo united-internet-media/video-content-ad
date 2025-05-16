@@ -1,6 +1,7 @@
 (function() {
     var playerIframe, iframeContainer, iframeContainerChild, playbackTimeout,
-    intersectionObserver, eventSource, eventOrigin, closeButton, currentVideoTitle = null;
+    intersectionObserver, eventSource, eventOrigin, closeButton, currentVideoTitle,
+    playerFrameWidth, playerFrameHeight = null;
     window.addEventListener("message", messageHandler, false);
     function messageHandler(e) {
         var messageArr, playerFunc, playerMessage = null;
@@ -19,6 +20,8 @@
                     if (f.contentWindow == eventSource || 
                         f.contentWindow==eventSource.parent) {
                         playerIframe = f;
+                        playerFrameWidth = f.style.width ? f.style.width : f.offsetWidth + "px";
+                        playerFrameHeight = f.style.height ? f.style.height : (f.offsetHeight * 9 / 16 ) + "px"; //make it 16:9
                         iframeContainer = playerIframe.parentElement.parentElement;
                         iframeContainerChild = iframeContainer.firstElementChild;
                         break;
@@ -71,8 +74,8 @@
         iframeContainerChild.style.width = "";
         iframeContainerChild.style.height = "";
 
-        playerIframe.style.width = "300px";
-        playerIframe.style.height = "250px";
+        playerIframe.style.width = playerFrameWidth;
+        playerIframe.style.height = playerFrameHeight;
         playerIframe.style.float = "";
 
         //iframeContainerChild.removeChild(infoDiv);
