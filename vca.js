@@ -4,7 +4,7 @@
     playerFrameWidth, playerFrameHeight = null;
     window.addEventListener("message", messageHandler, false);
     function messageHandler(e) {
-        var messageArr, playerFunc, playerMessage = null;
+        var messageArr, playerFunc, playerMessage, matchingResult = null;
         if( typeof e.data === "string" && e.data.split("|")[0] == "BPLR" ) {
             //console.log("POSTMESSAGE event", e);
             messageArr = e.data.split("|");
@@ -39,6 +39,11 @@
 
             if(playerFunc == "trigger" && playerMessage == "firstPlay") {
                 clearPlaybackTimeout();
+            }
+
+            if(playerFunc == "findTextContainingTags") {
+                matchingResult = findTextContainingTags(JSON.parse(playerMessage));
+                eventSource.postMessage('TVVM|'+JSON.stringify(matchingResult), eventOrigin);
             }
         }
     }
@@ -129,5 +134,117 @@
 
         unSticky();
     }
+
+    function findTextContainingTags(pageDetails) {
+        var matchingResult = {success: false, text: ''};
+        for ( var pageDetailsIndex = 0; pageDetailsIndex < pageDetails.length; pageDetailsIndex++ ) {
+            var pageDetail = pageDetails[pageDetailsIndex];
+			var htmlTags = document.querySelectorAll(pageDetail.elementTag);
+
+            for ( var htmlTagsIndex = 0; htmlTagsIndex < htmlTags.length; htmlTagsIndex++ ) {
+
+                if ( pageDetail.elementSelectorType ) {
+                    if ( !pageDetail.elementSelector ) {
+                        console.warn('findTextContainingTags : elementSelector property missing!', pageDetail); continue;
+                    }
+
+                    var attributeValue = htmlTags[htmlTagsIndex].getAttribute(pageDetail.elementSelectorType);
+
+                    if ( !attributeValue || attributeValue.indexOf(pageDetail.elementSelector) === -1 ) {
+                        continue;
+                    }
+                }
+
+                if ( pageDetail.elementSub ) {
+                    var subElements = htmlTags[htmlTagsIndex].querySelectorAll(pageDetail.elementSub);
+
+                    for ( var subElementsIndex = 0; subElementsIndex < subElements.length; subElementsIndex++ ) {
+                        var subElement = subElements[subElementsIndex];
+                        /**
+                         * Skip sub elements that are not visible, or the ones that do NOT contain any text.
+                         */
+                        if ( !subElement.innerText ) {
+                            console.warn('findTextContainingTags : Skipping sub element (.innerText was falsy) : ', subElement); continue;
+                        }
+
+                        if ( !isHtmlElementVisible(subElement) ) {
+                            console.warn('findTextContainingTags : Skipping sub element (display property was "none") : ', subElement); continue;
+                        }
+
+                        var normalizedText = normalizeText(subElement.innerText);
+
+                        if ( normalizedText ) {
+                            matchingResult.text += normalizedText + (pageDetail.addDot ? '.' : '');
+                        }
+                    }
+                } else {
+                    var normalizedText = normalizeText(htmlTags[htmlTagsIndex].innerText);
+
+                    if ( normalizedText ) {
+                        matchingResult.text += normalizedText + (pageDetail.addDot ? '.' : '');
+                    }
+                }
+            }
+        }
+
+        if(matchingResult.text) {
+            matchingResult.success = true;
+        } 
+
+        return matchingResult;
+    }
+
+    function normalizeText(string) {
+        try {
+			if ( !string || typeof string !== 'string' ) {
+				throw new Error('Not a string');
+			}
+
+			string = string.trim();
+			/**
+			 * Replace this special characters with ASCII equivalents.
+			 * Taken from here : https://www.freeformatter.com/html-entities.html.
+			 */
+			var integerEntities = {
+				// ˆ - Circumflex accent.
+				"ˆ" : "^",
+				// ˜ - Tilde.
+				"˜" : "~",
+				// – - En dash.
+				"–" : '-',
+				// — - Em dash.
+				"—" : '-',
+				// ‘ - Left single quotation mark.
+				"‘" : "'",
+				// ’ - Right single quotation mark.
+				"’" : "'",
+				// ‚ - Single low-9 quotation mark.
+				"‚" : ",",
+				// “ - Left double quotation mark.
+				"“" : "\"",
+				// ” - Right double quotation mark.
+				"”" : "\"",
+				// „ - Double low-9 quotation mark.
+				"„" : ","
+			};
+
+			for ( var entity in integerEntities ) {
+				if ( integerEntities.hasOwnProperty(entity) ) {
+					string = string.replaceAll(entity, integerEntities[entity]);
+				}
+			}
+
+			return string;
+		} catch(error) {
+			console.warn('Video Matching normalizeText : ', error);
+			console.warn('Video Matching normalizeText string : ', string);
+
+			return '';
+		}
+    }
+
+    function isHtmlElementVisible(elem) {
+		return elem.offsetWidth > 0 || elem.offsetHeight > 0 || elem.getClientRects().length > 0;
+	}
 
 })()
