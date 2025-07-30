@@ -73,38 +73,38 @@
         iframeContainerChild.style.position = "";
         iframeContainerChild.style.top = "";
         //iframeContainerChild.style.bottom = "";
-        iframeContainerChild.style.left = "";
+        //iframeContainerChild.style.left = "";
         iframeContainerChild.style.padding = "";
         iframeContainerChild.style.zIndex = null;
         iframeContainerChild.style.width = "";
         iframeContainerChild.style.height = "";
 
-        playerIframe.style.width = playerFrameWidth;
-        playerIframe.style.height = playerFrameHeight;
-        playerIframe.style.float = "";
+        //playerIframe.style.width = playerFrameWidth;
+        //playerIframe.style.height = playerFrameHeight;
+        //playerIframe.style.float = "";
 
         //iframeContainerChild.removeChild(infoDiv);
         iframeContainerChild.removeChild( closeButton );
 
-        eventSource.postMessage('BPLR|setUIDSticky|false' , eventOrigin);
+        //eventSource.postMessage('BPLR|setUIDSticky|false' , eventOrigin);
     }
 
     function setSticky( isTop ) {
-        var stickyWidth = document.body.offsetWidth + "px";
-        var stickyHeight = ((document.body.offsetWidth/2)*9/16) + "px";
+        var stickyWidth = iframeContainerChild.offsetWidth + "px";
+        var stickyHeight = iframeContainerChild.offsetHeight + "px";
         //console.log("IS TOP", isTop);
         iframeContainerChild.style.position = "fixed";
         iframeContainerChild.style.zIndex = 20000;
         iframeContainerChild.style.top = "50px";
-        iframeContainerChild.style.left = "0px";
+        //iframeContainerChild.style.left = "0px";
         iframeContainerChild.style.padding = "0px";
         iframeContainerChild.style.width = stickyWidth;
         iframeContainerChild.style.height = stickyHeight;
 
         //playerIframe.style.width = (document.body.offsetWidth/2) + "px";
-        playerIframe.style.width = document.body.offsetWidth + "px";
-        playerIframe.style.height = stickyHeight;
-        playerIframe.style.float = "left";
+        //playerIframe.style.width = document.body.offsetWidth + "px";
+        //playerIframe.style.height = stickyHeight;
+        //playerIframe.style.float = "left";
 
         if(!closeButton) {
             createCloseButton();
@@ -112,7 +112,7 @@
         //iframeContainerChild.appendChild(infoDiv);
         iframeContainerChild.appendChild(closeButton);
 
-        eventSource.postMessage('BPLR|setUIDSticky|true' , eventOrigin);
+        //eventSource.postMessage('BPLR|setUIDSticky|true' , eventOrigin);
     }
 
     function createCloseButton() {
