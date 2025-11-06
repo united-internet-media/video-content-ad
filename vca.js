@@ -86,7 +86,7 @@
         //iframeContainerChild.removeChild(infoDiv);
         iframeContainerChild.removeChild( closeButton );
 
-        //eventSource.postMessage('BPLR|setUIDSticky|false' , eventOrigin);
+        eventSource.postMessage('BPLR|setUIDSticky|false' , eventOrigin);
     }
 
     function setSticky( isTop ) {
@@ -112,7 +112,7 @@
         //iframeContainerChild.appendChild(infoDiv);
         iframeContainerChild.appendChild(closeButton);
 
-        //eventSource.postMessage('BPLR|setUIDSticky|true' , eventOrigin);
+        eventSource.postMessage('BPLR|setUIDSticky|true' , eventOrigin);
     }
 
     function createCloseButton() {
