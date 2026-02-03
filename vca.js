@@ -1,6 +1,7 @@
 (function() {
     var playerIframe, iframeContainer, iframeContainerChild, playbackTimeout,
     intersectionObserver, eventSource, eventOrigin, closeButton, currentVideoTitle,
+	articleObserver, article, belowArticle, inSticky,
     playerFrameWidth, playerFrameHeight = null;
     window.addEventListener("message", messageHandler, false);
     function messageHandler(e) {
@@ -27,6 +28,33 @@
                         break;
                     }
                 }
+
+				/***** SET ARTICLE OBSERVER START ****/
+				article = document.querySelector('.article-body');
+
+				const articleOptions = {
+				  root: null, // use the viewport
+				  threshold: 0, // trigger as soon as even 1px is visible/hidden
+				  rootMargin: "0px 0px 100% 0px" // This is the trick!
+				};
+
+				articleObserver = new IntersectionObserver((entries) => {
+				  entries.forEach(entry => {
+				    // If isIntersecting is false and the bounding rect is negative, 
+				    // it means the element is above the viewport (viewport is below the div).
+				    if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+				      belowArticle = true
+				      closeButton && unSticky();
+				    } else {
+				      //console.log("Viewport is ABOVE or INSIDE the article");
+					  belowArticle = false
+					  !inSticky && setSticky()
+				    }
+				  });
+				}, articleOptions);
+				
+				articleObserver.observe(article);
+				/***** SET ARTICLE OBSERVER END ****/
 
                 intersectionObserver = new IntersectionObserver(handleIntersection, {threshold: 1.0});
                 intersectionObserver.observe(iframeContainer);
@@ -62,6 +90,9 @@
     }
 
     function handleIntersection(entries) {
+		if( belowArticle ) {
+			return false;
+		}
         if( !entries[0].isIntersecting ) {
             setSticky( entries[0].boundingClientRect.top < 0  );
         } else {
@@ -70,6 +101,7 @@
     }
 
     function unSticky() {
+		inSticky = false;
         iframeContainerChild.style.position = "";
         iframeContainerChild.style.top = "";
         //iframeContainerChild.style.bottom = "";
@@ -90,12 +122,16 @@
     }
 
     function setSticky( isTop ) {
+		if( belowArticle ) {
+			return false;
+		}
+		inSticky = true;
         var stickyWidth = iframeContainerChild.offsetWidth + "px";
         var stickyHeight = iframeContainerChild.offsetHeight + "px";
         //console.log("IS TOP", isTop);
         iframeContainerChild.style.position = "fixed";
         iframeContainerChild.style.zIndex = 20000;
-        iframeContainerChild.style.top = "50px";
+        iframeContainerChild.style.top = "0px";
         //iframeContainerChild.style.left = "0px";
         iframeContainerChild.style.padding = "0px";
         iframeContainerChild.style.width = stickyWidth;
@@ -131,7 +167,8 @@
 
     function closeSticky() {
         intersectionObserver.unobserve(iframeContainer);
-
+		articleObserver.unobserve(article);
+		
         unSticky();
     }
 
