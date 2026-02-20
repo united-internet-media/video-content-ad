@@ -133,7 +133,7 @@
         //playerIframe.style.float = "";
 
         //iframeContainerChild.removeChild(infoDiv);
-        iframeContainerChild.removeChild( closeButton );
+        closeButton && iframeContainerChild.removeChild( closeButton );
 
         eventSource.postMessage('BPLR|setUIDSticky|false' , eventOrigin);
     }
