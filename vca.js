@@ -36,7 +36,7 @@
 				const articleOptions = {
 				  root: null, // use the viewport
 				  threshold: 0, // trigger as soon as even 1px is visible/hidden
-				  rootMargin: "-200px 0px 0px 0px" // This is the trick!
+				  rootMargin: "-240px 0px 0px 0px" // This is the trick!
 				};
 
 				articleObserver = new IntersectionObserver((entries) => {
@@ -56,22 +56,6 @@
 				
 				articleObserver.observe(article);
 				/***** SET ARTICLE OBSERVER END ****/
-
-				/***** SET HEADER OBSERVER START ****/
-				headerTag = document.querySelector('header');
-
-				intersectionObserverHeader = new IntersectionObserver((entries) => {
-					if( !entries[0].isIntersecting ) {
-						headerInView = false;
-						setSticky();
-			        } else {
-			            //closeButton && unSticky();
-						headerInView = true;
-						closeButton && unSticky();
-			        }
-				}, {threshold: 0.0});
-                intersectionObserverHeader.observe(headerTag);
-				/***** SET HEADER OBSERVER END ****/
 
                 intersectionObserver = new IntersectionObserver(handleIntersection, {threshold: 1.0});
                 intersectionObserver.observe(iframeContainer);
@@ -139,7 +123,7 @@
     }
 
     function setSticky( isTop ) {
-		if( belowArticle || headerInView ) {
+        if( belowArticle ) {
 			return false;
 		}
 		inSticky = true;
@@ -148,7 +132,7 @@
         //console.log("IS TOP", isTop);
         iframeContainerChild.style.position = "fixed";
         iframeContainerChild.style.zIndex = 20000;
-        iframeContainerChild.style.top = "0px";
+        iframeContainerChild.style.top = "88px";
         //iframeContainerChild.style.left = "0px";
         iframeContainerChild.style.padding = "0px";
         iframeContainerChild.style.width = stickyWidth;
@@ -185,7 +169,6 @@
     function closeSticky() {
         intersectionObserver.unobserve(iframeContainer);
 		articleObserver.unobserve(article);
-		intersectionObserverHeader.unobserve(headerTag);
 		
         unSticky();
     }
