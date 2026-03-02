@@ -1,4 +1,5 @@
 (function() {
+    'use strict';
     var playerIframe, iframeContainer, iframeContainerChild, playbackTimeout,
     intersectionObserver, eventSource, eventOrigin, closeButton, currentVideoTitle,
 	articleObserver, article, belowArticle, inSticky,
