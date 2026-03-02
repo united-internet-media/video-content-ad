@@ -133,7 +133,11 @@
         //console.log("IS TOP", isTop);
         iframeContainerChild.style.position = "fixed";
         iframeContainerChild.style.zIndex = 20000;
-        iframeContainerChild.style.top = "88px";
+
+        // this selector only matches the previous layout. if the layout changes
+        // to current, the correct top value is automatically applied
+        iframeContainerChild.style.top = document.querySelector('header.new-header[data-mod-name=header]') ? '50px' : '88px';
+
         //iframeContainerChild.style.left = "0px";
         iframeContainerChild.style.padding = "0px";
         iframeContainerChild.style.width = stickyWidth;
