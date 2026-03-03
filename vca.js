@@ -132,7 +132,7 @@
         var stickyHeight = iframeContainerChild.offsetHeight + "px";
         //console.log("IS TOP", isTop);
         iframeContainerChild.style.position = "fixed";
-        iframeContainerChild.style.zIndex = 20000;
+        iframeContainerChild.style.zIndex = 1999;
 
         // this selector only matches the previous layout. if the layout changes
         // to current, the correct top value is automatically applied
