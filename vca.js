@@ -138,6 +138,9 @@
         // to current, the correct top value is automatically applied
         iframeContainerChild.style.top = document.querySelector('header.new-header[data-mod-name=header]') ? '50px' : '88px';
 
+        // enlarge the top container so bread
+        document.querySelector('div.co-container.co-topbanner').style.height = '180px';
+
         //iframeContainerChild.style.left = "0px";
         iframeContainerChild.style.padding = "0px";
         iframeContainerChild.style.width = stickyWidth;
